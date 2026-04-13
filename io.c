@@ -58,13 +58,17 @@
 #endif
 
 
-//@ read on linux has a limit of 0x7ffff000 bytes (see `man read`)
-//@ this function calls recursively read until all `count` characters are read.
+//@ linux read() clamps to 0x7ffff000 bytes per call (see `man read`)
+//@ macOS read() returns EINVAL if count > INT_MAX (0x7fffffff)
+//@ cap each read and loop until all `count` bytes are read.
+#define READ_MAX 0x7FFF0000
 static ssize_t
 read_to_end(int fd, void *buf, size_t count) {
 	size_t read_bytes = 0;
 	while(read_bytes < count) {
-		const ssize_t ret = read(fd, ((char*)buf)+read_bytes, count-read_bytes);
+		size_t remaining = count - read_bytes;
+		if(remaining > READ_MAX) remaining = READ_MAX;
+		const ssize_t ret = read(fd, ((char*)buf)+read_bytes, remaining);
 		if(ret <= 0) return ret;
 		read_bytes += ret;
 	}
