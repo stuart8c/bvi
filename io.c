@@ -290,8 +290,11 @@ load(char *fname)
 	} else if ((filemode == REGULAR) || (filemode == DIRECTORY)) {
 		filesize = buf.st_size;
 		if (read_to_end(fd, mem, filesize) != filesize) {
-            sysemsg(fname);
-			filemode = ERROR;
+			close(fd);
+			move(maxy, 0);
+			endwin();
+			perror(fname);
+			exit(0);
 		}
 	} else {
 		filesize = 0L;
