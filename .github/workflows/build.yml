@@ -1,0 +1,24 @@
+name: Build
+on: [push, pull_request]
+jobs:
+  linux:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - run: sudo apt-get install -y libncurses-dev
+      - run: ./configure && make
+      - run: mkdir -p dist && cp bvi bmore bvi.1 bmore.1 bmore.help dist/
+      - uses: actions/upload-artifact@v4
+        with:
+          name: bvi-linux
+          path: dist/
+  macos:
+    runs-on: macos-latest
+    steps:
+      - uses: actions/checkout@v4
+      - run: ./configure && make
+      - run: mkdir -p dist && cp bvi bmore bvi.1 bmore.1 bmore.help dist/
+      - uses: actions/upload-artifact@v4
+        with:
+          name: bvi-macos
+          path: dist/
