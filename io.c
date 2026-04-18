@@ -131,7 +131,11 @@ save(char *fname, char *start, char *end, int flags)
 	}
 	if (filemode == PARTIAL) {
 		if (block_read) {
-			filesize = block_read;
+			if (block_is_eof) {
+				filesize = end - start + 1L;
+			} else {
+				filesize = block_read;
+			}
 			sprintf(string, "\"%s\" range %llu-%llu", fname,
 				(unsigned long long)block_begin,
 				(unsigned long long)(block_begin - 1 + filesize));
@@ -157,6 +161,10 @@ save(char *fname, char *start, char *end, int flags)
 		free(string);
 		close(fd);
 		return 0;
+	}
+	if (filemode == PARTIAL && block_is_eof && filesize != block_read) {
+		ftruncate(fd, block_begin + filesize);
+		block_read = filesize;
 	}
 	close(fd);
 	edits = 0;
@@ -285,6 +293,7 @@ load(char *fname)
 					(unsigned long long)(block_begin + filesize - 1));
 				filemode = PARTIAL;
 				block_read = filesize;
+				block_is_eof = (block_begin + filesize >= buf.st_size);
 				P(P_OF) = block_begin;
 				params[P_OF].flags |= P_CHANGED;
 			}

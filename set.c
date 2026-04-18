@@ -175,7 +175,7 @@ doset(char *arg)
 			} else {
 				params[i].nvalue = state;
 				params[i].flags |= P_CHANGED;
-				if (i == P_MM && state == TRUE && filemode == PARTIAL) {
+				if (i == P_MM && state == TRUE && filemode == PARTIAL && !block_is_eof) {
 					params[i].nvalue = FALSE;
 					emsg("Cannot enable memmove@for partial file load");
 					return 1;

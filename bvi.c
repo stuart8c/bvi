@@ -72,6 +72,7 @@ int	space = 2;
 long	precount = -1;
 
 int	block_flag = 0;
+int	block_is_eof = 0;
 
 
 off_t	block_begin, block_end, block_size;
@@ -112,7 +113,7 @@ usage()
 
 	fprintf(stderr, "Usage: %s [-R] [-c cmd | +cmd] [-f script]\n\
 	   [-s skip] [-e end] [-n length] file ...\n\
-	   file offset/size: 10k, 20m, 1g, 0x1000 hex, 0200 octal\n", progname);
+	   file offset/size: 10k, 20m, 1g, 1t, 0x1000 hex, 0200 octal\n", progname);
 
 	exit(1);
 }
@@ -303,7 +304,7 @@ main(int argc, char *argv[])
 
 	bvi_init(argv[0]);
 	params[P_TT].svalue = terminal;
-	if (block_flag && (P(P_MM) == TRUE)) {
+	if (block_flag && !block_is_eof && (P(P_MM) == TRUE)) {
 		P(P_MM) = FALSE;
 		params[P_TT].flags |= P_CHANGED;
 	}
@@ -778,7 +779,10 @@ calc_size(char *arg)
 	case 'M':	val *= 1048576;
 			break;
 	case 'g':
-	case 'G':	val *= 1024*1024*1024LL;
+	case 'G':	val *= 1024LL*1024*1024;
+			break;
+	case 't':
+	case 'T':	val *= 1024LL*1024*1024*1024;
 			break;
 	case '\0':	break;
 	default:	usage();

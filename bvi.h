@@ -200,6 +200,7 @@ extern	char	*poi;
 extern	int	smode;
 extern	int	again;
 extern  int     block_flag;
+extern  int     block_is_eof;
 extern  off_t   block_begin, block_end, block_size;
 extern	int	statusflag;
 extern	int	space;
