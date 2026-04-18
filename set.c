@@ -175,6 +175,11 @@ doset(char *arg)
 			} else {
 				params[i].nvalue = state;
 				params[i].flags |= P_CHANGED;
+				if (i == P_MM && state == TRUE && filemode == PARTIAL) {
+					params[i].nvalue = FALSE;
+					emsg("Cannot enable memmove@for partial file load");
+					return 1;
+				}
 				if (i == P_HL && state == FALSE) {
 					hl_spat = FALSE;
 					repaint();

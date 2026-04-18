@@ -465,8 +465,12 @@ docmdline(char *cmdline)
 		stuffin(files[0]);
 		stuffin("\n");
 	} else if (!strncmp("append", cmdname, len) && CMDLNG(6, 1)) {
-		if (chk_comm(NO_ADDR|MAX_ONE_ARG)) return;
-		do_ins_chg(start_addr, c_argc == 1 ? c_argv[0] : "a", U_APPEND);
+		if P(P_MM) {
+			if (chk_comm(NO_ADDR|MAX_ONE_ARG)) return;
+			do_ins_chg(start_addr, c_argc == 1 ? c_argv[0] : "a", U_APPEND);
+		} else {
+			movebyte();
+		}
 	} else if (!strncmp("change", cmdname, len) && CMDLNG(6, 1)) {
 		if (chk_comm(MAX_ONE_ARG)) return;
 		if (!addr_flag) start_addr = current;

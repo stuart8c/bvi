@@ -1025,5 +1025,8 @@ do_mark(int mark, PTR addr)
 void
 movebyte()
 {
-	emsg("Command disabled@- use ':set memmove' to enable ");
+	if (filemode == PARTIAL)
+		emsg("Insert/delete disabled@for partial file load");
+	else
+		emsg("Command disabled@- use ':set memmove' to enable ");
 }
